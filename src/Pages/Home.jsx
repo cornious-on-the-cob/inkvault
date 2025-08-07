@@ -1,36 +1,35 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../Imgs/Logo.png";
+import wolverine from "../Imgs/wolverine-comic.jpg";
+import fantastic4 from "../Imgs/fantastic-4-comic.jpg";
+import blackWidow from "../Imgs/black-widow-comic.webp";
 import comicsImage from "../Imgs/comics.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getComics } from "../utils/marvelApi.js";
 import axios from "axios";
 
 export default function Home() {
-  const [comics, setComics] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
-  const fetchComics = async () => {
-    try {
-      const url = getComics({ limit: 3 });
-      const response = await axios.get(url);
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
-      const comicsData = response.data.data.results;
-      console.log('Fetched comics:', comicsData);
-      setComics(comicsData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching comics:", error);
-      setError(error.message);
-      setLoading(false);
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate("/Search", { state: { searchQuery: searchQuery.trim() } });
     }
   };
 
-  useEffect(() => {
-    fetchComics();
-  }, []);
+  const handleSearchButtonClick = () => {
+    if (searchQuery.trim()) {
+      navigate("/Search", { state: { searchQuery: searchQuery.trim() } });
+    }
+  };
 
   return (
     <>
@@ -53,12 +52,24 @@ export default function Home() {
             <img src={Logo} alt="logo" className="nav__logo" />
           </figure>
         </Link>
-        <div className="search__box">
-          <input id="search" name="search" type="text" />
-          <button className="search__button">
+
+        <form className="search__box" onSubmit={handleSearchSubmit}>
+          <input
+            id="search"
+            name="search"
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search characters..."
+          />
+          <button
+            type="button"
+            className="search__button"
+            onClick={handleSearchButtonClick}
+          >
             <FontAwesomeIcon icon={faMagnifyingGlass} />
           </button>
-        </div>
+        </form>
       </nav>
 
       <main>
@@ -79,30 +90,27 @@ export default function Home() {
           <div className="container">
             <div className="row">
               <div className="comics__description">
-                <div className="section__title bangers-regular">Comics</div>
+                <div className="comics__title bangers-regular">Comics</div>
                 <p className="comics__para">
                   Browse by series, publisher, or era. Whether it's a golden age
                   classic or a modern crossover event, this is your archive of
                   full issue histories.
                 </p>
               </div>
-              {loading ? (
-                <div>Loading...</div>
-              ) : error ? (
-                <div>Error: {error}</div>
-              ) : (
-                <div className="comics-grid">
-                  {comics.map((comic, index) => (
-                    <div key={index} className="comic-card">
-                      <img
-                        src={`${comic.thumbnail.path}.${comic.thumbnail.extension}`}
-                        alt={comic.title}
-                      />
-                      <h3>{comic.title}</h3>
-                    </div>
-                  ))}
+              <div className="comics__grid">
+                <div className="comic">
+                  <img src={wolverine} className="comic__img" />
+                  <div className="comic__title bangers-regular">The Lase Wolverine</div>
                 </div>
-              )}
+                <div className="comic">
+                  <img src={blackWidow} className="comic__img" />
+                  <div className="comic__title bangers-regular">Web of Black Widow</div>
+                </div>
+                <div className="comic">
+                  <img src={fantastic4} className="comic__img" />
+                  <div className="comic__title bangers-regular">The Fantastic Four</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

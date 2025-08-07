@@ -6,6 +6,7 @@ export default function Search() {
   const [characterName, setCharacterName] = useState("");
   const [characterData, setCharacterData] = useState(null);
   const [comicData, setComicData] = useState(null);
+  const timestamp = new Date().getTime();
 
   const publicKey = "b79f152de0f40643978dfd93ba6da73d";
   const privateKey = "4bd3b6a5d32ce9742c8a5c69a86389d7616edb23";
@@ -19,7 +20,6 @@ export default function Search() {
     setCharacterData(null);
     setComicData(null);
 
-    const timestamp = new Date().getTime();
     const hash = generateHash(timestamp);
 
     const url = `https://gateway.marvel.com:443/v1/public/characters?apikey=${publicKey}&hash=${hash}&ts=${timestamp}&nameStartsWith=${characterName}&limit=100`;
